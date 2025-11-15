@@ -9,11 +9,12 @@ from confluence_client import ConfluenceClient
 from embedder import GeminiEmbedder
 from vector_store import VectorStore
 from utils import chunk_text, create_chunk_metadata, clean_text
+from hybrid_search import HybridSearch
 
 
 class RAGEngine:
     """Main RAG orchestration engine."""
-    
+
     def __init__(self):
         self.confluence_client = ConfluenceClient()
         self.embedder = GeminiEmbedder()
@@ -23,8 +24,13 @@ class RAGEngine:
             project=settings.google_cloud_project,
             location=settings.google_cloud_location
         )
+        # Initialize hybrid search
+        self.hybrid_search = HybridSearch(self.vector_store, self.embedder)
+        # Build keyword index if documents exist
+        if self.vector_store.get_stats()["total_chunks"] > 0:
+            self.hybrid_search.build_keyword_index()
     
-    def ingest_page(self, page_id: str) -> Dict:
+    def ingest_page(self, page_id: str, rebuild_index: bool = True) -> Dict:
         """
         Ingest a single Confluence page.
         
@@ -78,7 +84,12 @@ class RAGEngine:
             metadatas=metadatas,
             documents=chunks
         )
-        
+
+        # Rebuild keyword index for hybrid search if requested
+        if rebuild_index:
+            print("Rebuilding keyword index after ingestion...")
+            self.hybrid_search.build_keyword_index()
+
         return {
             "success": True,
             "page_id": page_id,
@@ -99,15 +110,17 @@ class RAGEngine:
         """
         results = []
         total_chunks = 0
-        
-        for page_id in page_ids:
-            result = self.ingest_page(page_id)
+
+        for i, page_id in enumerate(page_ids):
+            # Only rebuild index after the last page
+            rebuild_index = (i == len(page_ids) - 1)
+            result = self.ingest_page(page_id, rebuild_index=rebuild_index)
             results.append(result)
             if result["success"]:
                 total_chunks += result["chunks_created"]
-        
+
         successful = [r for r in results if r["success"]]
-        
+
         return {
             "status": "success" if successful else "failed",
             "pages_processed": len(successful),
@@ -138,36 +151,65 @@ class RAGEngine:
     
     def query(self, question: str, top_k: Optional[int] = None) -> Dict:
         """
-        Query the RAG system.
-        
+        Query the RAG system with hybrid search.
+
         Args:
             question: User question
             top_k: Number of chunks to retrieve (defaults to settings)
-            
+
         Returns:
             Dictionary with answer and sources
         """
         if top_k is None:
             top_k = settings.top_k_results
-        
-        # Generate query embedding
-        query_embedding = self.embedder.generate_embedding(question)
-        if not query_embedding:
-            return {
-                "answer": "Sorry, I encountered an error processing your question.",
-                "sources": [],
-                "chunks_used": []
-            }
-        
-        # Retrieve similar chunks
-        results = self.vector_store.query(query_embedding, top_k=top_k)
-        
+
+        print(f"Processing query: {question}")
+
+        # Use hybrid search for better retrieval
+        try:
+            # Try hybrid search first
+            results = self.hybrid_search.hybrid_query(
+                question=question,
+                top_k=top_k,
+                semantic_weight=0.6,  # Balance semantic and keyword search
+                keyword_weight=0.4,
+                similarity_threshold=0.2  # Lower threshold for better recall
+            )
+
+            # If no results from hybrid search, try fallback
+            if not results["documents"][0]:
+                print("No results from hybrid search, trying fallback strategy...")
+                results = self.hybrid_search.fallback_search(question, top_k=top_k)
+
+        except Exception as e:
+            print(f"Hybrid search failed, falling back to semantic search: {e}")
+            # Fallback to pure semantic search if hybrid search fails
+            query_embedding = self.embedder.generate_embedding(question)
+            if not query_embedding:
+                return {
+                    "answer": "Sorry, I encountered an error processing your question.",
+                    "sources": [],
+                    "chunks_used": []
+                }
+            results = self.vector_store.query(query_embedding, top_k=top_k)
+
         if not results["documents"][0]:
-            return {
-                "answer": "I couldn't find relevant information in our Confluence documentation to answer your question. Could you rephrase or ask about a related topic?",
-                "sources": [],
-                "chunks_used": []
-            }
+            # Last attempt: search for individual key terms
+            from hybrid_search import HybridSearch
+            key_terms = HybridSearch._extract_key_terms(None, question)
+            if key_terms:
+                print(f"No results found. Searching for key terms: {key_terms}")
+                return {
+                    "answer": f"I couldn't find specific information about your query. You might want to search for these terms individually: {', '.join(key_terms)}. Please try rephrasing your question or check if the relevant pages have been indexed.",
+                    "sources": [],
+                    "chunks_used": []
+                }
+            else:
+                return {
+                    "answer": "I couldn't find relevant information in our Confluence documentation to answer your question. Please ensure the relevant pages have been indexed and try rephrasing your question.",
+                    "sources": [],
+                    "chunks_used": []
+                }
         
         # Extract chunks and metadata
         chunks = results["documents"][0]
