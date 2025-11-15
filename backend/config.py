@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     chromadb_path: str = "./data/chromadb"
     chunk_size: int = 800
     chunk_overlap: int = 150
-    top_k_results: int = 4
+    top_k_results: int = 8  # Increased from 4 for better context coverage
     
     # API Settings
     backend_port: int = 8000

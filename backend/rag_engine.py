@@ -171,9 +171,9 @@ class RAGEngine:
             results = self.hybrid_search.hybrid_query(
                 question=question,
                 top_k=top_k,
-                semantic_weight=0.6,  # Balance semantic and keyword search
-                keyword_weight=0.4,
-                similarity_threshold=0.2  # Lower threshold for better recall
+                semantic_weight=0.5,  # Balanced for natural language + technical terms
+                keyword_weight=0.5,   # Equal weight for keyword matching
+                similarity_threshold=0.25  # Balanced threshold for quality results
             )
 
             # If no results from hybrid search, try fallback

@@ -101,7 +101,8 @@ def ingest_space(space_key, limit=None):
         print_progress(idx - 1, len(pages), f"Processing: {page_title[:40]}...")
         
         try:
-            result = rag_engine.ingest_page(page_id)
+            # Don't rebuild index after each page (massive performance improvement)
+            result = rag_engine.ingest_page(page_id, rebuild_index=False)
             
             if result.get('success'):
                 successful += 1
@@ -119,6 +120,13 @@ def ingest_space(space_key, limit=None):
     
     print()  # New line after progress bar
     print()
+    
+    # Rebuild keyword index once at the end (much more efficient!)
+    if successful > 0:
+        print("🔨 Building keyword search index...")
+        rag_engine.hybrid_search.build_keyword_index()
+        print("✅ Keyword index built")
+        print()
     
     # Calculate duration
     duration = (datetime.now() - start_time).total_seconds()

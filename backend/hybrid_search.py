@@ -110,13 +110,23 @@ class HybridSearch:
         synonyms = {
             "install": ["setup", "configure", "deploy", "installation"],
             "python": ["Python", "python3", "py"],
-            "run": ["execute", "start", "launch"],
-            "create": ["make", "build", "generate"],
-            "delete": ["remove", "destroy", "clear"],
-            "update": ["upgrade", "modify", "change"],
-            "fix": ["resolve", "repair", "debug"],
-            "error": ["issue", "problem", "exception", "bug"],
-            "guide": ["tutorial", "documentation", "instructions", "steps"]
+            "run": ["execute", "start", "launch", "invoke"],
+            "create": ["make", "build", "generate", "initialize"],
+            "delete": ["remove", "destroy", "clear", "uninstall"],
+            "update": ["upgrade", "modify", "change", "patch"],
+            "fix": ["resolve", "repair", "debug", "troubleshoot"],
+            "error": ["issue", "problem", "exception", "bug", "failure"],
+            "guide": ["tutorial", "documentation", "instructions", "steps"],
+            "access": ["login", "authenticate", "connect", "permission"],
+            "configure": ["settings", "options", "parameters", "config"],
+            "deploy": ["release", "publish", "rollout"],
+            "setup": ["configuration", "initialize", "prepare"],
+            "connection": ["connectivity", "link", "integration"],
+            "page": ["document", "article", "wiki"],
+            "team": ["group", "department", "organization"],
+            "project": ["repository", "workspace", "codebase"],
+            "version": ["release", "build", "edition"],
+            "environment": ["env", "server", "platform", "system"]
         }
 
         # Generate queries with synonyms
