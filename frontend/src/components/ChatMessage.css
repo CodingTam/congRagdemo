@@ -1,8 +1,7 @@
 .chat-message {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-  animation: fadeIn 0.3s ease-in;
+  margin-bottom: 1.25rem;
+  animation: fadeIn 0.4s ease-out;
 }
 
 @keyframes fadeIn {
@@ -17,28 +16,11 @@
 }
 
 .chat-message.user {
-  flex-direction: row-reverse;
-}
-
-.message-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  flex-shrink: 0;
-  background: #f3f4f6;
-}
-
-.chat-message.user .message-avatar {
-  background: #667eea;
+  justify-content: flex-end;
 }
 
 .message-content {
-  flex: 1;
-  max-width: 70%;
+  max-width: 80%;
 }
 
 .chat-message.user .message-content {
@@ -48,16 +30,21 @@
 }
 
 .message-text {
-  background: white;
-  padding: 1rem 1.25rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  line-height: 1.6;
+  background: #fafafa;
+  padding: 0.625rem 0.875rem;
+  border-radius: 6px;
+  box-shadow: none;
+  border: none;
+  line-height: 1.5;
+  font-size: 0.8125rem;
+  color: #000000;
 }
 
 .chat-message.user .message-text {
-  background: #667eea;
-  color: white;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  box-shadow: none;
 }
 
 .message-text p {
@@ -73,39 +60,49 @@
 }
 
 .numbered-item {
-  margin: 0.5rem 0;
+  margin: 0.4rem 0;
   padding-left: 0.5rem;
+  line-height: 1.5;
 }
 
 .code-block {
-  background: #1e293b;
-  color: #e2e8f0;
-  padding: 1rem;
-  border-radius: 6px;
+  background: #f5f5f5;
+  color: #000000;
+  padding: 0.5rem 0.625rem;
+  border-radius: 4px;
   overflow-x: auto;
-  margin: 0.75rem 0;
-  font-family: 'Courier New', monospace;
-  font-size: 0.9rem;
+  margin: 0.5rem 0;
+  font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+  font-size: 0.75rem;
+  border: none;
 }
 
 .chat-message.user .code-block {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   color: white;
+  border: none;
 }
 
 .message-timestamp {
-  font-size: 0.75rem;
-  color: #9ca3af;
-  margin-top: 0.25rem;
+  font-size: 0.625rem;
+  color: #cccccc;
+  margin-top: 0.375rem;
+  font-weight: 400;
 }
 
 .chat-message.user .message-timestamp {
   text-align: right;
+  color: #999999;
 }
 
 @media (max-width: 768px) {
   .message-content {
     max-width: 85%;
+  }
+  
+  .message-text {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
   }
 }
 

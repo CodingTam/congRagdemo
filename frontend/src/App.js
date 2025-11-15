@@ -107,9 +107,15 @@ function App() {
               <div className="example-questions">
                 <p><strong>Try asking:</strong></p>
                 <ul>
-                  <li>"How do I deploy the framework?"</li>
-                  <li>"What are the steps for setting up the environment?"</li>
-                  <li>"Where can I find the API documentation?"</li>
+                  <li onClick={() => handleSendMessage("How do I deploy the framework?")}>
+                    "How do I deploy the framework?"
+                  </li>
+                  <li onClick={() => handleSendMessage("What are the steps for setting up the environment?")}>
+                    "What are the steps for setting up the environment?"
+                  </li>
+                  <li onClick={() => handleSendMessage("Where can I find the API documentation?")}>
+                    "Where can I find the API documentation?"
+                  </li>
                 </ul>
               </div>
             </div>

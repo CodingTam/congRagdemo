@@ -4,7 +4,6 @@ import './LoadingIndicator.css';
 function LoadingIndicator({ message }) {
   return (
     <div className="loading-indicator">
-      <div className="loading-avatar">🤖</div>
       <div className="loading-content">
         <div className="loading-dots">
           <span></span>

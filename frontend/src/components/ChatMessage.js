@@ -53,9 +53,6 @@ function ChatMessage({ message }) {
 
   return (
     <div className={`chat-message ${message.type}`}>
-      <div className="message-avatar">
-        {message.type === 'user' ? '👤' : '🤖'}
-      </div>
       <div className="message-content">
         <div className="message-text">
           {formatContent(message.content)}
