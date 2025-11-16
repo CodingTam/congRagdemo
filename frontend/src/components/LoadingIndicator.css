@@ -1,0 +1,55 @@
+.loading-indicator {
+  display: flex;
+  margin-bottom: 1.25rem;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.loading-content {
+  background: #fafafa;
+  padding: 0.625rem 0.875rem;
+  border-radius: 6px;
+  box-shadow: none;
+  border: none;
+  max-width: 80%;
+}
+
+.loading-dots {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.loading-dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #000000;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.loading-message {
+  margin-top: 0.375rem;
+  font-size: 0.75rem;
+  color: #666666;
+  font-weight: 400;
+}
+
